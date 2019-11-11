@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Maze
+GenericName=Maze
+TryExec=sugarapp
+Exec=sugarapp
+Icon=vu.lux.olpc.Maze
+Type=Application
+Comment=Abacus
+Terminal=false
+StartupNotify=true
+Categories=Education;

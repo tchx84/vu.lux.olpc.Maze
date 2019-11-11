@@ -1,0 +1,55 @@
+diff --git a/activity.py b/activity.py
+index 6064a72..3828922 100755
+--- a/activity.py
++++ b/activity.py
+@@ -11,7 +11,6 @@ from gi.repository import GLib
+ from gi.repository import Gdk
+ from gi.repository import Gtk
+ 
+-from sugar3.activity import activity
+ from sugar3.presence.presenceservice import PresenceService
+ from sugar3.activity.widgets import ActivityToolbarButton
+ from sugar3.activity.widgets import StopButton
+@@ -26,18 +25,20 @@ from gettext import gettext as _
+ from textchannel import TextChannelWrapper
+ import game
+ 
++from sugarapp.widgets import SugarCompatibleActivity
+ 
+-class MazeActivity(activity.Activity):
++
++class MazeActivity(SugarCompatibleActivity):
+ 
+     def __init__(self, handle):
+         """Set up the Maze activity."""
+-        activity.Activity.__init__(self, handle)
++        SugarCompatibleActivity.__init__(self, handle)
+         self._busy_count = 0
+         self._unbusy_idle_sid = None
+ 
+-        if 'state' in self.metadata:
+-            self.state = json.loads(self.metadata['state'])
+-        else:
++        try:
++            self.read_file(self._get_autosave_filename())
++        except:
+             self.state = None
+ 
+         self.build_toolbar()
+@@ -251,11 +252,14 @@ class MazeActivity(activity.Activity):
+                 'risk': self.game.maze.risk}
+ 
+         logging.debug('Saving data: %s', data)
+-        self.metadata['state'] = json.dumps(data)
++        with open(file_path, 'w') as save_file:
++            save_file.write(json.dumps(data))
+ 
+     def can_close(self):
+         self.game.close_finish_window()
+         return True
+ 
+     def read_file(self, file_path):
+-        pass
++        logging.debug('reading the state of the game...')
++        with open(file_path, 'r') as save_file:
++            self.state = json.loads(save_file.read())
